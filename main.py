@@ -9,56 +9,62 @@ SCREEN_SIZE = (1280, 720)
 class Vector:
     """Class of vectors"""
     def __init__(self, x_y):
+        """Initialization method"""
         x, y = x_y
         self.x = float(x)
         self.y = float(y)
 
-    def __str__(self):
-        return f'({self.x}, {self.y})'
-
-    def __repr__(self):
-        return self.__str__()
-
     def add(self, other):
+        """Sum of vectors"""
         result = self.x + other.x, self.y + other.y
         return Vector(result)
 
     def sub(self, other):
+        """Difference of vectors"""
         result = self.x - other.x, self.y - other.y
         return Vector(result)
 
     def mul(self, num):
+        """Scalar multiply of vector by number"""
         result = self.x * num, self.y * num
         return Vector(result)
 
     def scalar_mul(self, other):
+        """Scalar multiply of vectors"""
         result = self.x * other.x + self.y * other.y
         return result
 
     def __len__(self):
+        """Vector length"""
         result = sqrt(self.x * self.x + self.y * self.y)
         return Vector(result)
 
 
 class Line:
+    """Class of lines"""
 
     def __init__(self):
+        """Initialization method"""
         self.points = []
         self.speeds = []
 
     def add_point(self, pos, speed):
+        """Adding a point"""
         self.points.append(pos)
         self.speeds.append(speed)
 
     def change_speed(self, new_speed):
+        """Change of speed"""
         for speed_number in range(len(self.speeds)):
             self.speeds[speed_number] = Vector.mul(self.speeds[speed_number], new_speed)
 
     def delete_point(self):
+        """Point removal"""
         self.points = self.points[:-1]
         self.speeds = self.speeds[:-1]
 
     def draw_points(self, style='point', width=4, color=(255, 255, 255)):
+        """Drawing of points and lines"""
         if style == 'line':
             points = self.get_joint()
             for point_number in range(-1, len(points) - 1):
@@ -70,6 +76,7 @@ class Line:
                 pygame.draw.circle(gameDisplay, color, (int(point.x), int(point.y)), width)
 
     def set_points(self):
+        """Point setting"""
         for point in range(len(self.points)):
             self.points[point] = Vector.add(self.points[point], self.speeds[point])
 
@@ -83,15 +90,19 @@ class Line:
 
 
 class Joint(Line):
+    """Class of joints"""
 
     def __init__(self):
+        """Initialization method"""
         super().__init__()
         self.steps = 20
 
     def draw_points(self, color):
+        """Drawing of lines"""
         super().draw_points(style='line', color=color)
 
     def get_joint(self):
+        """Getting the joint"""
         result = []
         if len(self.points) < 3:
             return []
@@ -106,6 +117,7 @@ class Joint(Line):
         return result
 
     def get_points(self, base_points):
+        """Getting points"""
         alpha = 1 / self.steps
         result = []
         for i in range(self.steps):
@@ -113,6 +125,7 @@ class Joint(Line):
         return result
 
     def get_point(self, base_points, alpha, deg=None):
+        """Getting point"""
         if deg is None:
             deg = len(base_points) - 1
 
@@ -124,6 +137,7 @@ class Joint(Line):
 
 
 def display_help(joint):
+    """Help menu"""
     gameDisplay.fill((50, 50, 50))
     font1 = pygame.font.SysFont("arial", 30)
     font2 = pygame.font.SysFont("serif", 30)
@@ -176,11 +190,11 @@ if __name__ == "__main__":
                     joint.speeds = []
                 if event.key == pygame.K_p:
                     pause = not pause
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_KP_PLUS:
                     joint.steps += 1
                 if event.key == pygame.K_F1:
                     show_help = not show_help
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_KP_MINUS:
                     joint.steps -= 1 if joint.steps > 1 else 0
                 if event.key == pygame.K_h:
                     line.change_speed(2)
